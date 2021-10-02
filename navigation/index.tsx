@@ -27,6 +27,7 @@ import {
   RootTabScreenProps,
 } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
+import AuthenticationScreen from "../screens/AuthenticationScreen";
 
 export default function Navigation({
   colorScheme,
@@ -50,7 +51,7 @@ export default function Navigation({
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  const userToken = true;
+  const userToken = false;
   return (
     <Stack.Navigator>
       {userToken ? (
@@ -72,9 +73,9 @@ function RootNavigator() {
       ) : (
         <>
           <Stack.Screen
-            name="NotFound"
-            component={NotFoundScreen}
-            options={{ title: "Oops!" }}
+            name="Authentication"
+            component={AuthenticationScreen}
+            options={{ title: "Welcome!" }}
           />
         </>
       )}
