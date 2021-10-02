@@ -1,10 +1,25 @@
 import { Text, View } from "../components/Themed";
 import * as React from "react";
 import { Button, StyleSheet, TextInput } from "react-native";
+import { useLoginMutation } from "../generated/graphql";
+import * as SecureStore from "expo-secure-store";
 
 export default function AuthenticationScreen() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [login, { data, loading }] = useLoginMutation();
+
+  const handleLoginClick = async () => {
+    const loginRes = await login({
+      variables: {
+        email,
+        password,
+      },
+    });
+    if (loginRes && loginRes.data && loginRes.data.login.accessToken) {
+      await SecureStore.setItemAsync("token", loginRes.data.login.accessToken);
+    }
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Email Address</Text>
@@ -23,7 +38,7 @@ export default function AuthenticationScreen() {
         style={styles.input}
         secureTextEntry={true}
       />
-      <Button title="Sign In" onPress={() => {}} />
+      <Button title="Sign In" onPress={handleLoginClick} />
     </View>
   );
 }
