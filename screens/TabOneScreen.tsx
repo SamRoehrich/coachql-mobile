@@ -5,6 +5,7 @@ import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
 import { RootTabScreenProps } from "../types";
 import { useHelloQuery } from "../generated/graphql";
+import * as SecureStore from "expo-secure-store";
 
 export default function TabOneScreen({
   navigation,

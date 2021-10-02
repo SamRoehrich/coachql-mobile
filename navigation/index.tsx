@@ -28,6 +28,9 @@ import {
 } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import AuthenticationScreen from "../screens/AuthenticationScreen";
+import { useMeQuery } from "../generated/graphql";
+import { View } from "../components/Themed";
+import { getAccessToken } from "../utils/accessToken";
 
 export default function Navigation({
   colorScheme,
@@ -60,36 +63,49 @@ async function getUserToken() {
 }
 
 function RootNavigator() {
-  const [userToken, setUserToken] = React.useState<string | null>(null);
+  // const [userToken, setUserToken] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
-    async function getUserToken() {
-      const token = await SecureStore.getItemAsync("token");
-      if (token && token.length > 0) {
-        const refreshToken = fetch(
-          "https://cql-remote.herokuapp.com/refresh_token",
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              authorization: token,
-            },
-          }
-        )
-          .then((res) => JSON.stringify(res))
-          .then((data) => setUserToken(data));
-      } else {
-        setUserToken(null);
-      }
-    }
+  const { data, loading } = useMeQuery();
 
-    getUserToken();
-  }, []);
+  if (loading)
+    return (
+      <View>
+        <Text>Loading..</Text>
+      </View>
+    );
+
+  if (data) {
+    console.log(data);
+  }
+
+  // React.useEffect(() => {
+  //   async function getUserToken() {
+  //     const token = await SecureStore.getItemAsync("token");
+  //     if (token && token.length > 0) {
+  //       const refreshToken = fetch(
+  //         "https://cql-remote.herokuapp.com/refresh_token",
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             Accept: "application/json",
+  //             "Content-Type": "application/json",
+  //             authorization: token,
+  //           },
+  //         }
+  //       )
+  //         .then((res) => JSON.stringify(res))
+  //         .then((data) => setUserToken(data));
+  //     } else {
+  //       setUserToken(null);
+  //     }
+  //   }
+
+  //   getUserToken();
+  // }, []);
 
   return (
     <Stack.Navigator>
-      {userToken !== null ? (
+      {data !== null ? (
         <>
           <Stack.Screen
             name="Root"
