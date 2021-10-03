@@ -29,37 +29,56 @@ interface DecodedToken {
   exp: number;
 }
 
-const requestLink = new ApolloLink(
-  (operation, forward) =>
-    new Observable((observer) => {
-      let handle: any;
-      Promise.resolve(operation)
-        .then((operation) => {
-          SecureStore.getItemAsync("token").then((accessToken) => {
-            if (accessToken) {
-              console.log("Opertaion" + accessToken);
-              operation.setContext({
-                headers: {
-                  authorization: `bearer ${accessToken}`,
-                },
-              });
-            }
-          });
-        })
-        .then(() => {
-          handle = forward(operation).subscribe({
-            next: observer.next.bind(observer),
-            error: observer.error.bind(observer),
-            complete: observer.complete.bind(observer),
-          });
-        })
-        .catch(observer.error.bind(observer));
+// const requestLink = new ApolloLink(
+//   (operation, forward) =>
+//     new Observable((observer) => {
+//       let handle: any;
+//       Promise.resolve(operation)
+//         .then((operation) => {
+//           SecureStore.getItemAsync("token").then((accessToken) => {
+//             if (accessToken) {
+//               console.log("Opertaion" + accessToken);
+//               operation.setContext({
+//                 headers: {
+//                   authorization: `bearer ${accessToken}`,
+//                 },
+//               });
+//             }
+//           });
+//         })
+//         .then(() => {
+//           console.log(operation.getContext().headers);
+//           handle = forward(operation).subscribe({
+//             next: observer.next.bind(observer),
+//             error: observer.error.bind(observer),
+//             complete: observer.complete.bind(observer),
+//           });
+//         })
+//         .catch(observer.error.bind(observer));
+//     })
+// );
 
-      return () => {
-        if (handle) handle.unsubscribe();
-      };
-    })
-);
+// const requestLink = new ApolloLink((operation, forward) => {
+//   SecureStore.getItemAsync("token").then((token) => {
+//     operation.setContext(() => ({
+//       headers: {
+//         authorization: token,
+//       },
+//     }));
+//     return forward(operation);
+//   });
+//   return forward(operation);
+// });
+
+const requestLink = setContext(async (_, { headers }) => {
+  const token = await SecureStore.getItemAsync("token");
+  return {
+    headers: {
+      ...headers,
+      authorization: "Bearer " + token,
+    },
+  };
+});
 
 const cache = new InMemoryCache();
 
@@ -70,7 +89,6 @@ const client = new ApolloClient({
       isTokenValidOrUndefined: () => {
         SecureStore.getItemAsync("token").then((storedToken) => {
           if (storedToken) {
-            console.log(storedToken);
             try {
               const { exp } = jwt_decode<DecodedToken>(storedToken);
               if (Date.now() >= exp * 1000) {
