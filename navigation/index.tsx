@@ -53,15 +53,6 @@ export default function Navigation({
  */
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-async function getUserToken() {
-  const token = await SecureStore.getItemAsync("token");
-  if (token) {
-    return token;
-  } else {
-    return null;
-  }
-}
-
 function RootNavigator() {
   // const [userToken, setUserToken] = React.useState<string | null>(null);
 
@@ -78,34 +69,9 @@ function RootNavigator() {
     console.log(data);
   }
 
-  // React.useEffect(() => {
-  //   async function getUserToken() {
-  //     const token = await SecureStore.getItemAsync("token");
-  //     if (token && token.length > 0) {
-  //       const refreshToken = fetch(
-  //         "https://cql-remote.herokuapp.com/refresh_token",
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             Accept: "application/json",
-  //             "Content-Type": "application/json",
-  //             authorization: token,
-  //           },
-  //         }
-  //       )
-  //         .then((res) => JSON.stringify(res))
-  //         .then((data) => setUserToken(data));
-  //     } else {
-  //       setUserToken(null);
-  //     }
-  //   }
-
-  //   getUserToken();
-  // }, []);
-
   return (
     <Stack.Navigator>
-      {data !== null ? (
+      {data?.me?.id !== undefined ? (
         <>
           <Stack.Screen
             name="Root"

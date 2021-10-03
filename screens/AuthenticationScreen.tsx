@@ -7,7 +7,7 @@ import * as SecureStore from "expo-secure-store";
 export default function AuthenticationScreen() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [login, { data, loading }] = useLoginMutation();
+  const [login, { data, loading, client }] = useLoginMutation();
 
   const handleLoginClick = async () => {
     const loginRes = await login({
