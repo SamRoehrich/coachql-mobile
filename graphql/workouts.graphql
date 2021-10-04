@@ -1,0 +1,13 @@
+query GetWorkouts {
+  getWorkoutsInOrg {
+    name
+    description
+    numSets
+    workoutType
+    sets
+    id
+    equiptment
+    recordClimbs
+    notifications
+  }
+}

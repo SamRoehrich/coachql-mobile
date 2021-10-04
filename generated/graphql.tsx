@@ -453,6 +453,11 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, firstName: string, lastName: string, email: string } | null | undefined };
 
+export type GetWorkoutsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetWorkoutsQuery = { __typename?: 'Query', getWorkoutsInOrg: Array<{ __typename?: 'Workout', name: string, description: string, numSets: number, workoutType: string, sets: string, id: number, equiptment: string, recordClimbs: boolean, notifications: boolean }> };
+
 
 export const HelloDocument = gql`
     query Hello {
@@ -563,3 +568,45 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const GetWorkoutsDocument = gql`
+    query GetWorkouts {
+  getWorkoutsInOrg {
+    name
+    description
+    numSets
+    workoutType
+    sets
+    id
+    equiptment
+    recordClimbs
+    notifications
+  }
+}
+    `;
+
+/**
+ * __useGetWorkoutsQuery__
+ *
+ * To run a query within a React component, call `useGetWorkoutsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetWorkoutsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetWorkoutsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetWorkoutsQuery(baseOptions?: Apollo.QueryHookOptions<GetWorkoutsQuery, GetWorkoutsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetWorkoutsQuery, GetWorkoutsQueryVariables>(GetWorkoutsDocument, options);
+      }
+export function useGetWorkoutsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetWorkoutsQuery, GetWorkoutsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetWorkoutsQuery, GetWorkoutsQueryVariables>(GetWorkoutsDocument, options);
+        }
+export type GetWorkoutsQueryHookResult = ReturnType<typeof useGetWorkoutsQuery>;
+export type GetWorkoutsLazyQueryHookResult = ReturnType<typeof useGetWorkoutsLazyQuery>;
+export type GetWorkoutsQueryResult = Apollo.QueryResult<GetWorkoutsQuery, GetWorkoutsQueryVariables>;

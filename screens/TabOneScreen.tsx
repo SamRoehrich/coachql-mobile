@@ -1,69 +1,86 @@
 import * as React from "react";
-import { Button, StyleSheet } from "react-native";
-
-import EditScreenInfo from "../components/EditScreenInfo";
-import { Text, useThemeColor, View } from "../components/Themed";
-import { RootTabScreenProps } from "../types";
-import { useHelloQuery, useMeQuery } from "../generated/graphql";
-import * as SecureStore from "expo-secure-store";
-import { TextInput } from "react-native-gesture-handler";
+import { ActivityIndicator, Button, StyleSheet } from "react-native";
+import tw from "twrnc";
+import { Text, View } from "../components/Themed";
+import { HomeParamList, HomeStackNavProps, RootTabScreenProps } from "../types";
+import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useGetWorkoutsQuery } from "../generated/graphql";
+import { Spinner } from "../components/Spinner";
 
 export default function TabOneScreen({
   navigation,
-}: RootTabScreenProps<"TabOne">) {
-  const { data, loading } = useMeQuery();
-  const [value, setValue] = React.useState("");
-  const [token, setToken] = React.useState<string | null>("");
+}: RootTabScreenProps<"Home">) {
+  const HomeStack = createNativeStackNavigator<HomeParamList>();
 
-  React.useEffect(() => {
-    SecureStore.getItemAsync("token").then((value) => setToken(value));
-  }, [token, value]);
-
-  const handleSubmit = () => {
-    SecureStore.setItemAsync("token", value);
-  };
-
-  if (loading) {
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
-  if (data) {
-    return (
-      <View>
-        <Text>{data.me?.firstName}</Text>
-        <Button
-          title="Log out"
-          onPress={() => {
-            SecureStore.setItemAsync("token", "");
-          }}
-        />
-      </View>
-    );
-  }
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <Button title="Submit" onPress={handleSubmit} />
-      <TextInput
-        style={styles.input}
-        onChangeText={(text) => {
-          setValue(text);
-        }}
+    <HomeStack.Navigator>
+      <HomeStack.Screen
+        name="Dashboard"
+        component={Dashboard}
+        options={{ headerShown: false }}
       />
-      <Text style={styles.title}>{token}</Text>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      />
-      <EditScreenInfo path="/screens/TabOneScreen.tsx" />
-    </View>
+      <HomeStack.Screen name="Workouts" component={WorkoutsScreen} />
+    </HomeStack.Navigator>
   );
 }
+
+const WorkoutsScreen = () => {
+  const { data, loading } = useGetWorkoutsQuery();
+  if (loading) {
+    return <Spinner />;
+  }
+  if (data) {
+    return (
+      <SafeAreaView>
+        <FlatList
+          data={data.getWorkoutsInOrg}
+          renderItem={({ item }) => {
+            return <Button title={item.name} onPress={() => {}} />;
+          }}
+          keyExtractor={(item) => item.id}
+        />
+      </SafeAreaView>
+    );
+  }
+  return <Spinner />;
+};
+const Dashboard = ({ navigation }: HomeStackNavProps<"Dashboard">) => {
+  return (
+    <SafeAreaView style={tw`bg-white h-full`}>
+      <View style={tw`h-full p-4 bg-white`}>
+        <TouchableOpacity
+          style={tw`w-full h-1/4`}
+          onPress={() => {
+            navigation.navigate("Workouts");
+          }}
+        >
+          <View style={tw`bg-gray-100 h-full flex justify-center`}>
+            <Text style={tw`px-4 text-2xl text-gray-700`}>Workouts</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={tw`w-full`}>
+          <View style={tw`bg-gray-100 flex justify-center`}>
+            <Text style={tw`px-4 text-2xl text-gray-700`}>Notes</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={tw`w-full`}>
+          <View style={tw`bg-gray-100 flex justify-center`}>
+            <Text style={tw`px-4 text-2xl text-gray-700`}>
+              Training History
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={tw`w-full`}>
+          <View style={tw`bg-gray-100 flex justify-center`}>
+            <Text style={tw`px-4 text-2xl text-gray-700`}>Calendar</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

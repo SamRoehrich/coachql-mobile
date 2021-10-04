@@ -1,13 +1,14 @@
 import { Text, View } from "../components/Themed";
 import * as React from "react";
 import { Button, StyleSheet, TextInput } from "react-native";
-import { useLoginMutation } from "../generated/graphql";
+import { useLoginMutation, useMeLazyQuery } from "../generated/graphql";
 import * as SecureStore from "expo-secure-store";
 
 export default function AuthenticationScreen() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [login, { data, loading, client }] = useLoginMutation();
+  const [me] = useMeLazyQuery();
 
   const handleLoginClick = async () => {
     const loginRes = await login({
@@ -18,8 +19,16 @@ export default function AuthenticationScreen() {
     });
     if (loginRes && loginRes.data && loginRes.data.login.accessToken) {
       await SecureStore.setItemAsync("token", loginRes.data.login.accessToken);
+      me();
     }
   };
+  if (loading) {
+    return (
+      <View>
+        <Text> LOADING... </Text>
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Email Address</Text>

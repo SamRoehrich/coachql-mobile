@@ -12,7 +12,12 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
-import { ColorSchemeName, Pressable, Text } from "react-native";
+import {
+  ActivityIndicator,
+  ColorSchemeName,
+  Pressable,
+  Text,
+} from "react-native";
 import * as SecureStore from "expo-secure-store";
 
 import Colors from "../constants/Colors";
@@ -28,21 +33,57 @@ import {
 } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import AuthenticationScreen from "../screens/AuthenticationScreen";
-import { useMeQuery } from "../generated/graphql";
+import { useMeLazyQuery, useMeQuery } from "../generated/graphql";
 import { View } from "../components/Themed";
 import { getAccessToken } from "../utils/accessToken";
-
+import tw from "twrnc";
+import { SafeAreaView } from "react-native-safe-area-context";
 export default function Navigation({
   colorScheme,
 }: {
   colorScheme: ColorSchemeName;
 }) {
+  const [appLoading, setLoading] = React.useState(true);
+  const [me, { data, loading, error }] = useMeLazyQuery();
+
+  React.useEffect(() => {
+    SecureStore.getItemAsync("token").then((token) => {
+      if (token) {
+        console.log(token);
+        me();
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
+    });
+  }, []);
+
+  if (appLoading || loading) {
+    return (
+      <SafeAreaView style={tw`flex h-full items-center justify-center`}>
+        <ActivityIndicator size="large" />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
     >
-      <RootNavigator />
+      {data?.me ? (
+        <RootNavigator />
+      ) : (
+        <Stack.Navigator>
+          <>
+            <Stack.Screen
+              name="Authentication"
+              component={AuthenticationScreen}
+              options={{ title: "Welcome!" }}
+            />
+          </>
+        </Stack.Navigator>
+      )}
     </NavigationContainer>
   );
 }
@@ -51,52 +92,29 @@ export default function Navigation({
  * A root stack navigator is often used for displaying modals on top of all other content.
  * https://reactnavigation.org/docs/modal
  */
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator();
 
 function RootNavigator() {
   // const [userToken, setUserToken] = React.useState<string | null>(null);
-
   const { data, loading } = useMeQuery();
-
-  if (loading)
-    return (
-      <View>
-        <Text>Loading..</Text>
-      </View>
-    );
-
-  if (data) {
-    console.log(data);
-  }
-
   return (
-    <Stack.Navigator>
-      {data?.me?.id !== undefined ? (
-        <>
-          <Stack.Screen
-            name="Root"
-            component={BottomTabNavigator}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="NotFound"
-            component={NotFoundScreen}
-            options={{ title: "Oops!" }}
-          />
-          <Stack.Group screenOptions={{ presentation: "modal" }}>
-            <Stack.Screen name="Modal" component={ModalScreen} />
-          </Stack.Group>
-        </>
-      ) : (
-        <>
-          <Stack.Screen
-            name="Authentication"
-            component={AuthenticationScreen}
-            options={{ title: "Welcome!" }}
-          />
-        </>
-      )}
-    </Stack.Navigator>
+    <>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Root"
+          component={BottomTabNavigator}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="NotFound"
+          component={NotFoundScreen}
+          options={{ title: "Oops!" }}
+        />
+        <Stack.Group screenOptions={{ presentation: "modal" }}>
+          <Stack.Screen name="Modal" component={ModalScreen} />
+        </Stack.Group>
+      </Stack.Navigator>
+    </>
   );
 }
 
@@ -111,39 +129,21 @@ function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="Home"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
       }}
     >
       <BottomTab.Screen
-        name="TabOne"
+        name="Home"
         component={TabOneScreen}
-        options={({ navigation }: RootTabScreenProps<"TabOne">) => ({
-          title: "Tab One",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate("Modal")}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}
-            >
-              <FontAwesome
-                name="info-circle"
-                size={25}
-                color={Colors[colorScheme].text}
-                style={{ marginRight: 15 }}
-              />
-            </Pressable>
-          ),
-        })}
+        options={{ headerShown: false }}
       />
       <BottomTab.Screen
-        name="TabTwo"
+        name="Profile"
         component={TabTwoScreen}
         options={{
-          title: "Tab Two",
+          title: "Profile",
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
