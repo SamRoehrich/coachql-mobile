@@ -11,3 +11,31 @@ query GetWorkouts {
     notifications
   }
 }
+
+query getWorkout($workoutId: Float!) {
+  getWorkout(workoutId: $workoutId) {
+    name
+    description
+    numSets
+    workoutType
+    sets
+    id
+    equiptment
+    recordClimbs
+    notifications
+  }
+}
+
+mutation LogWorkout(
+  $workoutId: Float!
+  $percentCompleted: Float!
+  $rpe: Float!
+  $notes: String!
+) {
+  logSession(
+    workoutId: $workoutId
+    percentCompleted: $percentCompleted
+    notes: $notes
+    rpe: $rpe
+  )
+}

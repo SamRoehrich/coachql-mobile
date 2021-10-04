@@ -458,6 +458,23 @@ export type GetWorkoutsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetWorkoutsQuery = { __typename?: 'Query', getWorkoutsInOrg: Array<{ __typename?: 'Workout', name: string, description: string, numSets: number, workoutType: string, sets: string, id: number, equiptment: string, recordClimbs: boolean, notifications: boolean }> };
 
+export type GetWorkoutQueryVariables = Exact<{
+  workoutId: Scalars['Float'];
+}>;
+
+
+export type GetWorkoutQuery = { __typename?: 'Query', getWorkout: { __typename?: 'Workout', name: string, description: string, numSets: number, workoutType: string, sets: string, id: number, equiptment: string, recordClimbs: boolean, notifications: boolean } };
+
+export type LogWorkoutMutationVariables = Exact<{
+  workoutId: Scalars['Float'];
+  percentCompleted: Scalars['Float'];
+  rpe: Scalars['Float'];
+  notes: Scalars['String'];
+}>;
+
+
+export type LogWorkoutMutation = { __typename?: 'Mutation', logSession: boolean };
+
 
 export const HelloDocument = gql`
     query Hello {
@@ -610,3 +627,85 @@ export function useGetWorkoutsLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type GetWorkoutsQueryHookResult = ReturnType<typeof useGetWorkoutsQuery>;
 export type GetWorkoutsLazyQueryHookResult = ReturnType<typeof useGetWorkoutsLazyQuery>;
 export type GetWorkoutsQueryResult = Apollo.QueryResult<GetWorkoutsQuery, GetWorkoutsQueryVariables>;
+export const GetWorkoutDocument = gql`
+    query getWorkout($workoutId: Float!) {
+  getWorkout(workoutId: $workoutId) {
+    name
+    description
+    numSets
+    workoutType
+    sets
+    id
+    equiptment
+    recordClimbs
+    notifications
+  }
+}
+    `;
+
+/**
+ * __useGetWorkoutQuery__
+ *
+ * To run a query within a React component, call `useGetWorkoutQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetWorkoutQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetWorkoutQuery({
+ *   variables: {
+ *      workoutId: // value for 'workoutId'
+ *   },
+ * });
+ */
+export function useGetWorkoutQuery(baseOptions: Apollo.QueryHookOptions<GetWorkoutQuery, GetWorkoutQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetWorkoutQuery, GetWorkoutQueryVariables>(GetWorkoutDocument, options);
+      }
+export function useGetWorkoutLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetWorkoutQuery, GetWorkoutQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetWorkoutQuery, GetWorkoutQueryVariables>(GetWorkoutDocument, options);
+        }
+export type GetWorkoutQueryHookResult = ReturnType<typeof useGetWorkoutQuery>;
+export type GetWorkoutLazyQueryHookResult = ReturnType<typeof useGetWorkoutLazyQuery>;
+export type GetWorkoutQueryResult = Apollo.QueryResult<GetWorkoutQuery, GetWorkoutQueryVariables>;
+export const LogWorkoutDocument = gql`
+    mutation LogWorkout($workoutId: Float!, $percentCompleted: Float!, $rpe: Float!, $notes: String!) {
+  logSession(
+    workoutId: $workoutId
+    percentCompleted: $percentCompleted
+    notes: $notes
+    rpe: $rpe
+  )
+}
+    `;
+export type LogWorkoutMutationFn = Apollo.MutationFunction<LogWorkoutMutation, LogWorkoutMutationVariables>;
+
+/**
+ * __useLogWorkoutMutation__
+ *
+ * To run a mutation, you first call `useLogWorkoutMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLogWorkoutMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [logWorkoutMutation, { data, loading, error }] = useLogWorkoutMutation({
+ *   variables: {
+ *      workoutId: // value for 'workoutId'
+ *      percentCompleted: // value for 'percentCompleted'
+ *      rpe: // value for 'rpe'
+ *      notes: // value for 'notes'
+ *   },
+ * });
+ */
+export function useLogWorkoutMutation(baseOptions?: Apollo.MutationHookOptions<LogWorkoutMutation, LogWorkoutMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LogWorkoutMutation, LogWorkoutMutationVariables>(LogWorkoutDocument, options);
+      }
+export type LogWorkoutMutationHookResult = ReturnType<typeof useLogWorkoutMutation>;
+export type LogWorkoutMutationResult = Apollo.MutationResult<LogWorkoutMutation>;
+export type LogWorkoutMutationOptions = Apollo.BaseMutationOptions<LogWorkoutMutation, LogWorkoutMutationVariables>;

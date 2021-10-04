@@ -2,11 +2,25 @@ import * as React from "react";
 import { ActivityIndicator, Button, StyleSheet } from "react-native";
 import tw from "twrnc";
 import { Text, View } from "../components/Themed";
-import { HomeParamList, HomeStackNavProps, RootTabScreenProps } from "../types";
-import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
+import {
+  HomeParamList,
+  HomeStackNavProps,
+  RootTabScreenProps,
+  WorkoutParamList,
+} from "../types";
+import {
+  FlatList,
+  TextInput,
+  TouchableOpacity,
+} from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useGetWorkoutsQuery } from "../generated/graphql";
+import {
+  useGetWorkoutQuery,
+  useGetWorkoutsQuery,
+  useLogWorkoutMutation,
+  Workout,
+} from "../generated/graphql";
 import { Spinner } from "../components/Spinner";
 
 export default function TabOneScreen({
@@ -22,12 +36,93 @@ export default function TabOneScreen({
         options={{ headerShown: false }}
       />
       <HomeStack.Screen name="Workouts" component={WorkoutsScreen} />
+      <HomeStack.Screen name="Workout" component={WorkoutScreen} />
+      <HomeStack.Screen name="LogWorkout" component={LogWorkout} />
     </HomeStack.Navigator>
   );
 }
 
-const WorkoutsScreen = () => {
+interface WorkoutListItemProps {
+  workout: Workout;
+}
+
+const LogWorkout = ({ route }: HomeStackNavProps<"LogWorkout">) => {
+  const [logSession, { data, loading }] = useLogWorkoutMutation();
+  const [percentCompleted, setPercentCompleted] = React.useState<string>();
+  const [rpe, setRpe] = React.useState<string>();
+  const [notes, setNotes] = React.useState<string>();
+  return (
+    <SafeAreaView>
+      <Text>Log Workout</Text>
+      <Text>Percent Completed</Text>
+      <TextInput
+        onChangeText={(value) => setPercentCompleted(value)}
+        value={percentCompleted}
+      />
+      <Text>RPE</Text>
+      <TextInput onChangeText={(value) => setRpe(value)} value={rpe} />
+      <Text>Notes</Text>
+      <TextInput onChangeText={(value) => setNotes(value)} value={notes} />
+
+      <Button title="Submit" onPress={() => {}} />
+    </SafeAreaView>
+  );
+};
+
+const WorkoutScreen = ({ navigation, route }: HomeStackNavProps<"Workout">) => {
+  const { data, loading } = useGetWorkoutQuery({
+    variables: {
+      workoutId: route.params.id,
+    },
+  });
+  if (loading) {
+    return <Spinner />;
+  }
+  return (
+    <SafeAreaView>
+      <Text style={tw`text-xl p-2`}>Workout: {route.params.name}</Text>
+      {data && data.getWorkout ? (
+        <>
+          <Text style={tw`text-lg p-2`}>{data.getWorkout.description}</Text>
+          <View style={tw`flex flex-row justify-between p-2`}>
+            <Button title="Start Workout" onPress={() => {}} />
+            <Button
+              title="Log Workout"
+              onPress={() => {
+                navigation.navigate("LogWorkout", { id: route.params.id });
+              }}
+            />
+          </View>
+        </>
+      ) : (
+        <>
+          <Text>
+            Could not load the workout from the server. Close the app and try
+            again.
+          </Text>
+        </>
+      )}
+    </SafeAreaView>
+  );
+};
+
+const WorkoutsScreen = ({ navigation }: HomeStackNavProps<"Workouts">) => {
   const { data, loading } = useGetWorkoutsQuery();
+
+  const WorkoutListItem: React.FC<WorkoutListItemProps> = ({ workout }) => {
+    return (
+      <Button
+        title={workout.name}
+        onPress={() => {
+          navigation.navigate("Workout", {
+            name: workout.name,
+            id: workout.id,
+          });
+        }}
+      />
+    );
+  };
+
   if (loading) {
     return <Spinner />;
   }
@@ -37,7 +132,7 @@ const WorkoutsScreen = () => {
         <FlatList
           data={data.getWorkoutsInOrg}
           renderItem={({ item }) => {
-            return <Button title={item.name} onPress={() => {}} />;
+            return <WorkoutListItem workout={item} />;
           }}
           keyExtractor={(item) => item.id}
         />

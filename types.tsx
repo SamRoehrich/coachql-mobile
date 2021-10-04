@@ -7,6 +7,7 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import {
   CompositeScreenProps,
   NavigatorScreenParams,
+  RouteProp,
 } from "@react-navigation/native";
 import {
   NativeStackNavigationProp,
@@ -42,8 +43,29 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
 export type HomeParamList = {
   Dashboard: undefined;
   Workouts: undefined;
+  Workout: {
+    name: string;
+    id: number;
+  };
+  WorkoutTimer: undefined;
+  LogWorkout: {
+    id: number;
+  };
 };
 
 export type HomeStackNavProps<T extends keyof HomeParamList> = {
   navigation: NativeStackNavigationProp<HomeParamList, T>;
+  route: RouteProp<HomeParamList, T>;
+};
+
+export type WorkoutParamList = {
+  Workout: {
+    name: string;
+    id: number;
+  };
+};
+
+export type WorkoutStackNavProps<T extends keyof WorkoutParamList> = {
+  navigation: NativeStackNavigationProp<WorkoutParamList, T>;
+  route: RouteProp<HomeParamList, T>;
 };
