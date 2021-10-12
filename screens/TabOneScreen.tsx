@@ -46,11 +46,11 @@ interface WorkoutListItemProps {
   workout: Workout;
 }
 
-const LogWorkout = ({ route }: HomeStackNavProps<"LogWorkout">) => {
+const LogWorkout = ({ route, navigation }: HomeStackNavProps<"LogWorkout">) => {
   const [logSession, { data, loading }] = useLogWorkoutMutation();
-  const [percentCompleted, setPercentCompleted] = React.useState<string>();
-  const [rpe, setRpe] = React.useState<string>();
-  const [notes, setNotes] = React.useState<string>();
+  const [percentCompleted, setPercentCompleted] = React.useState<string>("");
+  const [rpe, setRpe] = React.useState<string>("");
+  const [notes, setNotes] = React.useState<string>("");
   return (
     <SafeAreaView>
       <Text>Log Workout</Text>
@@ -64,7 +64,22 @@ const LogWorkout = ({ route }: HomeStackNavProps<"LogWorkout">) => {
       <Text>Notes</Text>
       <TextInput onChangeText={(value) => setNotes(value)} value={notes} />
 
-      <Button title="Submit" onPress={() => {}} />
+      <Button
+        title="Submit"
+        onPress={async () => {
+          const logRes = await logSession({
+            variables: {
+              workoutId: route.params.id,
+              percentCompleted: Number.parseInt(percentCompleted),
+              rpe: Number.parseInt(rpe),
+              notes,
+            },
+          });
+          if (logRes) {
+            navigation.navigate("Workouts");
+          }
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -107,7 +122,9 @@ const WorkoutScreen = ({ navigation, route }: HomeStackNavProps<"Workout">) => {
 };
 
 const WorkoutsScreen = ({ navigation }: HomeStackNavProps<"Workouts">) => {
-  const { data, loading } = useGetWorkoutsQuery();
+  const { data, loading } = useGetWorkoutsQuery({
+    fetchPolicy: "cache-and-network",
+  });
 
   const WorkoutListItem: React.FC<WorkoutListItemProps> = ({ workout }) => {
     return (
