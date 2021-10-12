@@ -4,6 +4,7 @@ import { Text, View } from "../components/Themed";
 import { useLogoutMutation } from "../generated/graphql";
 
 import * as SecureStore from "expo-secure-store";
+import { token } from "../graphql/cache";
 
 export default function TabTwoScreen() {
   const [logout] = useLogoutMutation();
@@ -19,7 +20,7 @@ export default function TabTwoScreen() {
         title="Log Out"
         onPress={async () => {
           await logout();
-          await SecureStore.setItemAsync("token", "");
+          token(null);
         }}
       />
     </View>

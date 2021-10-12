@@ -2,7 +2,7 @@ import { Text, View } from "../components/Themed";
 import * as React from "react";
 import { Button, StyleSheet, TextInput } from "react-native";
 import { useLoginMutation, useMeLazyQuery } from "../generated/graphql";
-import * as SecureStore from "expo-secure-store";
+import { token } from "../graphql/cache";
 
 export default function AuthenticationScreen() {
   const [email, setEmail] = React.useState("");
@@ -18,7 +18,8 @@ export default function AuthenticationScreen() {
       },
     });
     if (loginRes && loginRes.data && loginRes.data.login.accessToken) {
-      await SecureStore.setItemAsync("token", loginRes.data.login.accessToken);
+      console.log(loginRes.data.login.accessToken + "access token");
+      token(loginRes.data.login.accessToken);
       me();
     }
   };

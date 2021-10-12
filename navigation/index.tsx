@@ -38,6 +38,8 @@ import { View } from "../components/Themed";
 import { getAccessToken } from "../utils/accessToken";
 import tw from "twrnc";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { token } from "../graphql/cache";
+import { useReactiveVar } from "@apollo/client";
 export default function Navigation({
   colorScheme,
 }: {
@@ -45,18 +47,17 @@ export default function Navigation({
 }) {
   const [appLoading, setLoading] = React.useState(true);
   const [me, { data, loading, error }] = useMeLazyQuery();
+  let accessToken = useReactiveVar(token);
 
   React.useEffect(() => {
-    SecureStore.getItemAsync("token").then((token) => {
-      if (token) {
-        console.log(token);
-        me();
-        setLoading(false);
-      } else {
-        setLoading(false);
-      }
-    });
-  }, []);
+    if (accessToken) {
+      console.log(accessToken);
+      me();
+      setLoading(false);
+    } else {
+      setLoading(false);
+    }
+  }, [accessToken]);
 
   if (appLoading || loading) {
     return (
@@ -71,7 +72,7 @@ export default function Navigation({
       linking={LinkingConfiguration}
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
     >
-      {data?.me ? (
+      {accessToken ? (
         <RootNavigator />
       ) : (
         <Stack.Navigator>

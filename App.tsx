@@ -20,6 +20,7 @@ import Navigation from "./navigation";
 import { TokenRefreshLink } from "apollo-link-token-refresh";
 import jwt_decode from "jwt-decode";
 import { getAccessToken, setAccessToken } from "./utils/accessToken";
+import { token } from "./graphql/cache";
 
 //https://cql-remote.herokuapp.com/
 
@@ -28,47 +29,6 @@ interface DecodedToken {
   iat: number;
   exp: number;
 }
-
-// const requestLink = new ApolloLink(
-//   (operation, forward) =>
-//     new Observable((observer) => {
-//       let handle: any;
-//       Promise.resolve(operation)
-//         .then((operation) => {
-//           SecureStore.getItemAsync("token").then((accessToken) => {
-//             if (accessToken) {
-//               console.log("Opertaion" + accessToken);
-//               operation.setContext({
-//                 headers: {
-//                   authorization: `bearer ${accessToken}`,
-//                 },
-//               });
-//             }
-//           });
-//         })
-//         .then(() => {
-//           console.log(operation.getContext().headers);
-//           handle = forward(operation).subscribe({
-//             next: observer.next.bind(observer),
-//             error: observer.error.bind(observer),
-//             complete: observer.complete.bind(observer),
-//           });
-//         })
-//         .catch(observer.error.bind(observer));
-//     })
-// );
-
-// const requestLink = new ApolloLink((operation, forward) => {
-//   SecureStore.getItemAsync("token").then((token) => {
-//     operation.setContext(() => ({
-//       headers: {
-//         authorization: token,
-//       },
-//     }));
-//     return forward(operation);
-//   });
-//   return forward(operation);
-// });
 
 const requestLink = setContext(async (_, { headers }) => {
   const token = await SecureStore.getItemAsync("token");
@@ -80,41 +40,52 @@ const requestLink = setContext(async (_, { headers }) => {
   };
 });
 
-const cache = new InMemoryCache();
+const cache = new InMemoryCache({
+  typePolicies: {
+    Query: {
+      fields: {
+        token: {
+          read() {
+            return token;
+          },
+        },
+      },
+    },
+  },
+});
 
 const client = new ApolloClient({
   link: ApolloLink.from([
     new TokenRefreshLink({
       accessTokenField: "accessToken",
       isTokenValidOrUndefined: () => {
-        SecureStore.getItemAsync("token").then((storedToken) => {
-          if (storedToken) {
-            try {
-              const { exp } = jwt_decode<DecodedToken>(storedToken);
-              if (Date.now() >= exp * 1000) {
-                return false;
-              } else {
-                return true;
-              }
-            } catch {
-              return false;
-            }
+        const storedToken = token();
+        if (!storedToken) {
+          return true;
+        }
+        try {
+          const { exp } = jwt_decode<DecodedToken>(storedToken);
+          if (Date.now() >= exp * 1000) {
+            return false;
+          } else {
+            return true;
           }
-        });
-        return false;
+        } catch {
+          return false;
+        }
       },
       fetchAccessToken: async () => {
-        const token = await SecureStore.getItemAsync("token");
+        const accessToken = token();
         return fetch("https://cql-remote.herokuapp.com/refresh_mobile_token", {
           method: "POST",
           credentials: "include",
           headers: {
-            authorization: "Bearer " + token,
+            authorization: "Bearer " + accessToken,
           },
         });
       },
       handleFetch: (accessToken) => {
-        SecureStore.setItemAsync("token", accessToken);
+        token(accessToken);
       },
       handleError: (err) => {
         console.warn("Your refresh token is invalid. Try to relogin");
