@@ -22,6 +22,8 @@ import {
   Workout,
 } from "../generated/graphql";
 import { Spinner } from "../components/Spinner";
+import Dashboard from "../components/Dashboard";
+import WorkoutPreviewScreen from "./WorkoutPreviewScreen";
 
 export default function TabOneScreen({
   navigation,
@@ -36,7 +38,7 @@ export default function TabOneScreen({
         options={{ headerShown: false }}
       />
       <HomeStack.Screen name="Workouts" component={WorkoutsScreen} />
-      <HomeStack.Screen name="Workout" component={WorkoutScreen} />
+      <HomeStack.Screen name="Workout" component={WorkoutPreviewScreen} />
       <HomeStack.Screen name="LogWorkout" component={LogWorkout} />
     </HomeStack.Navigator>
   );
@@ -84,43 +86,6 @@ const LogWorkout = ({ route, navigation }: HomeStackNavProps<"LogWorkout">) => {
   );
 };
 
-const WorkoutScreen = ({ navigation, route }: HomeStackNavProps<"Workout">) => {
-  const { data, loading } = useGetWorkoutQuery({
-    variables: {
-      workoutId: route.params.id,
-    },
-  });
-  if (loading) {
-    return <Spinner />;
-  }
-  return (
-    <SafeAreaView>
-      <Text style={tw`text-xl p-2`}>Workout: {route.params.name}</Text>
-      {data && data.getWorkout ? (
-        <>
-          <Text style={tw`text-lg p-2`}>{data.getWorkout.description}</Text>
-          <View style={tw`flex flex-row justify-between p-2`}>
-            <Button title="Start Workout" onPress={() => {}} />
-            <Button
-              title="Log Workout"
-              onPress={() => {
-                navigation.navigate("LogWorkout", { id: route.params.id });
-              }}
-            />
-          </View>
-        </>
-      ) : (
-        <>
-          <Text>
-            Could not load the workout from the server. Close the app and try
-            again.
-          </Text>
-        </>
-      )}
-    </SafeAreaView>
-  );
-};
-
 const WorkoutsScreen = ({ navigation }: HomeStackNavProps<"Workouts">) => {
   const { data, loading } = useGetWorkoutsQuery({
     fetchPolicy: "cache-and-network",
@@ -157,41 +122,6 @@ const WorkoutsScreen = ({ navigation }: HomeStackNavProps<"Workouts">) => {
     );
   }
   return <Spinner />;
-};
-const Dashboard = ({ navigation }: HomeStackNavProps<"Dashboard">) => {
-  return (
-    <SafeAreaView style={tw`bg-white h-full`}>
-      <View style={tw`h-full p-4 bg-white`}>
-        <TouchableOpacity
-          style={tw`w-full h-1/4`}
-          onPress={() => {
-            navigation.navigate("Workouts");
-          }}
-        >
-          <View style={tw`bg-gray-100 h-full flex justify-center`}>
-            <Text style={tw`px-4 text-2xl text-gray-700`}>Workouts</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={tw`w-full`}>
-          <View style={tw`bg-gray-100 flex justify-center`}>
-            <Text style={tw`px-4 text-2xl text-gray-700`}>Notes</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={tw`w-full`}>
-          <View style={tw`bg-gray-100 flex justify-center`}>
-            <Text style={tw`px-4 text-2xl text-gray-700`}>
-              Training History
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={tw`w-full`}>
-          <View style={tw`bg-gray-100 flex justify-center`}>
-            <Text style={tw`px-4 text-2xl text-gray-700`}>Calendar</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
-  );
 };
 
 const styles = StyleSheet.create({

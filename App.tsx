@@ -103,18 +103,14 @@ const client = new ApolloClient({
         });
         return false;
       },
-      fetchAccessToken: () => {
-        return SecureStore.getItemAsync("token").then((token) => {
-          return fetch(
-            "https://cql-remote.herokuapp.com/refresh_mobile_token",
-            {
-              method: "POST",
-              credentials: "include",
-              headers: {
-                authorization: "Bearer " + token,
-              },
-            }
-          );
+      fetchAccessToken: async () => {
+        const token = await SecureStore.getItemAsync("token");
+        return fetch("https://cql-remote.herokuapp.com/refresh_mobile_token", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            authorization: "Bearer " + token,
+          },
         });
       },
       handleFetch: (accessToken) => {
