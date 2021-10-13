@@ -20,16 +20,29 @@ const WorkoutPreviewScreen = ({
   }
   return (
     <SafeAreaView>
-      <Text style={tw`text-xl p-2`}>Workout: {route.params.name}</Text>
+      <Text style={tw`text-xl font-light text-gray-700 px-2`}>Description</Text>
       {data && data.getWorkout ? (
         <>
-          <Text style={tw`text-lg p-2`}>{data.getWorkout.description}</Text>
+          <Text style={tw`text-lg px-2 text-gray-900`}>
+            {data.getWorkout.description}
+          </Text>
           <View style={tw`flex flex-row justify-between p-2`}>
-            <Button title="Start Workout" onPress={() => {}} />
+            <Button
+              title="Start Workout"
+              onPress={() => {
+                navigation.navigate("WorkoutTimer", {
+                  sets: data.getWorkout.sets,
+                  numSets: data.getWorkout.numSets,
+                });
+              }}
+            />
             <Button
               title="Log Workout"
               onPress={() => {
-                navigation.navigate("LogWorkout", { id: route.params.id });
+                navigation.navigate("LogWorkout", {
+                  id: route.params.id,
+                  name: route.params.name,
+                });
               }}
             />
           </View>

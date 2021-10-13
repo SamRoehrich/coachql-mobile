@@ -12,13 +12,7 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
-import {
-  ActivityIndicator,
-  ColorSchemeName,
-  Pressable,
-  Text,
-} from "react-native";
-import * as SecureStore from "expo-secure-store";
+import { ActivityIndicator, ColorSchemeName } from "react-native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -26,16 +20,10 @@ import ModalScreen from "../screens/ModalScreen";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import TabOneScreen from "../screens/TabOneScreen";
 import TabTwoScreen from "../screens/TabTwoScreen";
-import {
-  RootStackParamList,
-  RootTabParamList,
-  RootTabScreenProps,
-} from "../types";
+import { RootTabParamList } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import AuthenticationScreen from "../screens/AuthenticationScreen";
 import { useMeLazyQuery, useMeQuery } from "../generated/graphql";
-import { View } from "../components/Themed";
-import { getAccessToken } from "../utils/accessToken";
 import tw from "twrnc";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { token } from "../graphql/cache";
@@ -68,10 +56,7 @@ export default function Navigation({
   }
 
   return (
-    <NavigationContainer
-      linking={LinkingConfiguration}
-      theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-    >
+    <NavigationContainer linking={LinkingConfiguration} theme={DefaultTheme}>
       {accessToken ? (
         <RootNavigator />
       ) : (
