@@ -31,11 +31,11 @@ interface DecodedToken {
 }
 
 const requestLink = setContext(async (_, { headers }) => {
-  const token = await SecureStore.getItemAsync("token");
+  const accessToken = token();
   return {
     headers: {
       ...headers,
-      authorization: "Bearer " + token,
+      authorization: "Bearer " + accessToken,
     },
   };
 });

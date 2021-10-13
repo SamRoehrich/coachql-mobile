@@ -24,6 +24,7 @@ import {
 import { Spinner } from "../components/Spinner";
 import Dashboard from "../components/Dashboard";
 import WorkoutPreviewScreen from "./WorkoutPreviewScreen";
+import LogWorkoutScreen from "./LogWorkoutScreen";
 
 export default function TabOneScreen({
   navigation,
@@ -39,7 +40,7 @@ export default function TabOneScreen({
       />
       <HomeStack.Screen name="Workouts" component={WorkoutsScreen} />
       <HomeStack.Screen name="Workout" component={WorkoutPreviewScreen} />
-      <HomeStack.Screen name="LogWorkout" component={LogWorkout} />
+      <HomeStack.Screen name="LogWorkout" component={LogWorkoutScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -47,45 +48,6 @@ export default function TabOneScreen({
 interface WorkoutListItemProps {
   workout: Workout;
 }
-
-const LogWorkout = ({ route, navigation }: HomeStackNavProps<"LogWorkout">) => {
-  const [logSession, { data, loading }] = useLogWorkoutMutation();
-  const [percentCompleted, setPercentCompleted] = React.useState<string>("");
-  const [rpe, setRpe] = React.useState<string>("");
-  const [notes, setNotes] = React.useState<string>("");
-  return (
-    <SafeAreaView>
-      <Text>Log Workout</Text>
-      <Text>Percent Completed</Text>
-      <TextInput
-        onChangeText={(value) => setPercentCompleted(value)}
-        value={percentCompleted}
-      />
-      <Text>RPE</Text>
-      <TextInput onChangeText={(value) => setRpe(value)} value={rpe} />
-      <Text>Notes</Text>
-      <TextInput onChangeText={(value) => setNotes(value)} value={notes} />
-
-      <Button
-        title="Submit"
-        onPress={async () => {
-          const logRes = await logSession({
-            variables: {
-              workoutId: route.params.id,
-              percentCompleted: Number.parseInt(percentCompleted),
-              rpe: Number.parseInt(rpe),
-              notes,
-            },
-          });
-          if (logRes) {
-            navigation.navigate("Workouts");
-          }
-        }}
-      />
-    </SafeAreaView>
-  );
-};
-
 const WorkoutsScreen = ({ navigation }: HomeStackNavProps<"Workouts">) => {
   const { data, loading } = useGetWorkoutsQuery({
     fetchPolicy: "cache-and-network",
