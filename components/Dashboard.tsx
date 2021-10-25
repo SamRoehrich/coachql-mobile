@@ -7,29 +7,29 @@ import tw from "twrnc";
 
 const Dashboard = ({ navigation }: HomeStackNavProps<"Dashboard">) => {
   return (
-    <SafeAreaView style={tw`bg-white h-full`}>
+    <SafeAreaView style={tw`bg-white h-full flex justify-between p-4`}>
       <TouchableOpacity
         style={tw`w-full`}
         onPress={() => {
           navigation.navigate("Workouts");
         }}
       >
-        <View style={tw`bg-gray-100 flex justify-center`}>
+        <View style={tw`flex justify-center`}>
           <Text style={tw`px-4 text-2xl text-gray-700`}>Workouts</Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity style={tw`w-full`}>
-        <View style={tw`bg-gray-100 flex justify-center`}>
+        <View style={tw`flex justify-center`}>
           <Text style={tw`px-4 text-2xl text-gray-700`}>Notes</Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity style={tw`w-full`}>
-        <View style={tw`bg-gray-100 flex justify-center`}>
+        <View style={tw`flex justify-center`}>
           <Text style={tw`px-4 text-2xl text-gray-700`}>Training History</Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity style={tw`w-full`}>
-        <View style={tw`bg-gray-100 flex justify-center`}>
+        <View style={tw`flex justify-center`}>
           <Text style={tw`px-4 text-2xl text-gray-700`}>Calendar</Text>
         </View>
       </TouchableOpacity>

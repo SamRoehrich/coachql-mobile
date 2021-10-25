@@ -4,6 +4,7 @@ import { FlatList } from "react-native-gesture-handler";
 import { Spinner } from "../components/Spinner";
 import { useGetWorkoutsQuery, Workout } from "../generated/graphql";
 import { HomeStackNavProps } from "../types";
+import tw from "twrnc";
 
 interface WorkoutListItemProps {
   workout: Workout;
@@ -32,7 +33,7 @@ const WorkoutsScreen = ({ navigation }: HomeStackNavProps<"Workouts">) => {
   }
   if (data) {
     return (
-      <SafeAreaView>
+      <SafeAreaView style={tw`h-full`}>
         <FlatList
           data={data.getWorkoutsInOrg}
           renderItem={({ item }) => {
