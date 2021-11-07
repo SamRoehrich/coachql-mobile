@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, SafeAreaView } from "react-native";
+import { Button, SafeAreaView, Text, TouchableOpacity } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { Spinner } from "../components/Spinner";
 import { useGetWorkoutsQuery, Workout } from "../generated/graphql";
@@ -9,7 +9,10 @@ import tw from "twrnc";
 interface WorkoutListItemProps {
   workout: Workout;
 }
-const WorkoutsScreen = ({ navigation }: HomeStackNavProps<"Workouts">) => {
+const WorkoutsScreen = ({
+  navigation,
+  route,
+}: HomeStackNavProps<"Workouts">) => {
   const { data, loading } = useGetWorkoutsQuery({
     fetchPolicy: "cache-and-network",
   });
@@ -32,10 +35,15 @@ const WorkoutsScreen = ({ navigation }: HomeStackNavProps<"Workouts">) => {
     return <Spinner />;
   }
   if (data) {
+    const workouts = data.getWorkoutsInOrg.filter(
+      (workout) => workout.workoutType === route.params.type
+    );
+    console.log(workouts);
+
     return (
       <SafeAreaView style={tw`h-full`}>
         <FlatList
-          data={data.getWorkoutsInOrg}
+          data={workouts}
           renderItem={({ item }) => {
             return <WorkoutListItem workout={item} />;
           }}

@@ -7,6 +7,7 @@ import WorkoutPreviewScreen from "./WorkoutPreviewScreen";
 import LogWorkoutScreen from "./LogWorkoutScreen";
 import WorkoutsScreen from "./WorkoutsScreen";
 import TimerScreen from "./TimerScreen";
+import WorkoutTypeSelection from "./WorkoutTypeSelection";
 
 export default function TabOneScreen({
   navigation,
@@ -20,7 +21,16 @@ export default function TabOneScreen({
         component={Dashboard}
         options={{ headerShown: false }}
       />
-      <HomeStack.Screen name="Workouts" component={WorkoutsScreen} />
+      <HomeStack.Screen
+        name="WorkoutTypeSelection"
+        component={WorkoutTypeSelection}
+        options={{ title: "Find a Session" }}
+      />
+      <HomeStack.Screen
+        name="Workouts"
+        component={WorkoutsScreen}
+        options={({ route }) => ({ title: route.params.type })}
+      />
       <HomeStack.Screen
         name="Workout"
         component={WorkoutPreviewScreen}

@@ -7,13 +7,21 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 const TimerScreen = ({ route }: HomeStackNavProps<"WorkoutTimer">) => {
   const sets = JSON.parse(route.params.sets);
   const [set, setSet] = useState(0);
+  const [started, setStarted] = useState(false);
+  console.log(sets);
 
   return (
     <SafeAreaView>
       <View style={tw`h-1/2 flex items-center justify-center`}>
-        <Text>{sets[set].title}</Text>
-        <Text>{sets[set].reps}</Text>
-        <Text>{sets[set].minutes}</Text>
+        <Text style={tw`font-semibold text-4xl`}>{sets[set].title}</Text>
+        {sets[set].minutes || sets[set].seconds > 0 ? (
+          <Text style={tw`font-semibold text-3xl`}>
+            {sets[set].minutes}:
+            {sets[set].seconds === 0 ? "00" : sets[set].seconds}
+          </Text>
+        ) : (
+          <Text style={tw`text-lg`}>{sets[set].reps} reps</Text>
+        )}
       </View>
       <View style={tw`p-2 h-1/2 flex flex-row justify-between items-center`}>
         <TouchableOpacity
@@ -27,10 +35,10 @@ const TimerScreen = ({ route }: HomeStackNavProps<"WorkoutTimer">) => {
             })
           }
         >
-          <Text>Back</Text>
+          <Text style={tw`text-2xl`}>Back</Text>
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Text>Start/Stop</Text>
+        <TouchableOpacity onPress={() => setStarted((started) => !started)}>
+          <Text style={tw`text-2xl`}>{started ? "Stop" : "Start"}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() =>
@@ -43,7 +51,7 @@ const TimerScreen = ({ route }: HomeStackNavProps<"WorkoutTimer">) => {
             })
           }
         >
-          <Text>Forward</Text>
+          <Text style={tw`text-2xl`}>Forward</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

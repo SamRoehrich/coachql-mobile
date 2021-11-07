@@ -11,7 +11,7 @@ const Dashboard = ({ navigation }: HomeStackNavProps<"Dashboard">) => {
       <TouchableOpacity
         style={tw`w-full`}
         onPress={() => {
-          navigation.navigate("Workouts");
+          navigation.navigate("WorkoutTypeSelection");
         }}
       >
         <View style={tw`flex justify-center`}>

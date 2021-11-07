@@ -42,7 +42,10 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
 
 export type HomeParamList = {
   Dashboard: undefined;
-  Workouts: undefined;
+  Workouts: {
+    type: string;
+  };
+  WorkoutTypeSelection: undefined;
   Workout: {
     name: string;
     id: number;
