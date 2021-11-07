@@ -53,6 +53,8 @@ export type HomeParamList = {
   WorkoutTimer: {
     sets: string;
     numSets: number;
+    workoutName: string;
+    id: number;
   };
   LogWorkout: {
     id: number;

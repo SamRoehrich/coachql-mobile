@@ -41,7 +41,11 @@ export default function TabOneScreen({
         component={LogWorkoutScreen}
         options={{ title: "Log Workout" }}
       />
-      <HomeStack.Screen name="WorkoutTimer" component={TimerScreen} />
+      <HomeStack.Screen
+        name="WorkoutTimer"
+        component={TimerScreen}
+        options={({ route }) => ({ title: route.params.workoutName })}
+      />
     </HomeStack.Navigator>
   );
 }
