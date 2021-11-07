@@ -33,6 +33,8 @@ const WorkoutPreviewScreen = ({
                 navigation.navigate("WorkoutTimer", {
                   sets: data.getWorkout.sets,
                   numSets: data.getWorkout.numSets,
+                  workoutName: data.getWorkout.name,
+                  id: data.getWorkout.id,
                 });
               }}
             />
