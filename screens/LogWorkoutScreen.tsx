@@ -57,7 +57,7 @@ const LogWorkoutScreen = ({
             },
           });
           if (logRes) {
-            navigation.navigate("Workouts");
+            navigation.navigate("WorkoutTypeSelection");
           }
         }}
       />

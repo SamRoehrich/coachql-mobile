@@ -1,5 +1,5 @@
-import React, { FC, useState } from "react";
-import { SafeAreaView } from "react-native";
+import React, { FC, useEffect, useState } from "react";
+import { Button, SafeAreaView } from "react-native";
 import { Text, View } from "../components/Themed";
 import tw from "twrnc";
 import { HomeStackNavProps } from "../types";
@@ -16,11 +16,12 @@ const TimerScreen = ({
   route,
   navigation,
 }: HomeStackNavProps<"WorkoutTimer">) => {
-  const sets = JSON.parse(route.params.sets);
-  const [position, setPosition] = useState(0);
-  const numSets = route.params.numSets;
-  const [set, setSet] = useState(1);
   const [started, setStarted] = useState(false);
+  const [set, setSet] = useState(1);
+  const [position, setPosition] = useState(0);
+
+  const sets = JSON.parse(route.params.sets);
+  const numSets = route.params.numSets;
   console.log(sets);
 
   // args: name of button (Forward or Back)
@@ -47,15 +48,15 @@ const TimerScreen = ({
 
     if (button === "Back") {
       // if not at the end of the set, move the position back by one
-      if(position !== 0) {
-        setPosition((position) => position - 1)
-      } else if(position === 0) {
+      if (position !== 0) {
+        setPosition((position) => position - 1);
+      } else if (position === 0) {
         // if at the end of the set, move the set back one and puush the position to the end of the set array
-        if(set === 1) {
-          setSet(1)
+        if (set === 1) {
+          setSet(1);
         } else {
-          setSet((set) => set - 1)
-          setPosition(sets.length - 1)
+          setSet((set) => set - 1);
+          setPosition(sets.length - 1);
         }
       }
     }
@@ -64,24 +65,13 @@ const TimerScreen = ({
   return (
     <SafeAreaView>
       <View style={tw`h-1/2 flex items-center justify-center`}>
-        <CurrentTimerItem item={sets[position]} />
-        {sets[position].minutes || sets[position].seconds > 0 ? (
-          <Text style={tw`font-semibold text-3xl`}>
-            {sets[position].minutes}:
-            {sets[position].seconds === 0 ? "00" : sets[position].seconds}
-          </Text>
-        ) : (
-          <Text style={tw`text-lg`}>{sets[position].reps} reps</Text>
-        )}
+        <CurrentTimerItem item={sets[position]} started={started} />
         <Text>
           Set {set} of {numSets}
         </Text>
       </View>
       <View style={tw`p-2 h-1/2 flex flex-row justify-between items-center`}>
-        <TouchableOpacity
-          onPress={() => handleButtonPress("Back")
-          }
-        >
+        <TouchableOpacity onPress={() => handleButtonPress("Back")}>
           <Text style={tw`text-2xl`}>Back</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setStarted((started) => !started)}>
@@ -99,12 +89,44 @@ const TimerScreen = ({
 
 interface CurrentItemProps {
   item: Set;
+  started?: boolean;
 }
 
 const CurrentTimerItem: FC<CurrentItemProps> = ({ item }) => {
+  const [minutes, setMinutes] = useState(item.minutes);
+  const [seconds, setSeconds] = useState(item.seconds);
+  const [started, setStarted] = useState(false);
+
+  function timerReset() {}
+
+  useEffect(() => {
+    setMinutes(item.minutes);
+    setSeconds(item.seconds);
+  }, [item]);
+
+  useEffect(() => {
+    if (started) {
+      if (seconds == 0) {
+        if (minutes == 0) {
+          timerReset();
+        }
+        if (minutes > 0) {
+          setSeconds(59);
+          setMinutes((minutes) => minutes - 1);
+        }
+      }
+      if (seconds > 0) {
+        setTimeout(() => setSeconds(seconds - 1), 1000);
+      }
+    }
+  }, [started, seconds, minutes]);
+
   return (
     <View>
       <Text>{item.title}</Text>
+      <Text>
+        {minutes}:{seconds > 10 ? seconds : "0" + seconds}
+      </Text>
     </View>
   );
 };
