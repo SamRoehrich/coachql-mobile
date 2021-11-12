@@ -4,6 +4,7 @@ import { Text, View } from "../components/Themed";
 import tw from "twrnc";
 import { HomeStackNavProps } from "../types";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import HideKeyboard from "../components/HideKeyboard";
 
 interface Set {
   intensity: number;
@@ -11,6 +12,7 @@ interface Set {
   seconds: number;
   timer: string;
   title: string;
+  reps: number;
 }
 const TimerScreen = ({
   route,
@@ -31,6 +33,7 @@ const TimerScreen = ({
     if (!called) {
       setStarted(false);
     }
+    timerRef.current ? clearTimeout(timerRef.current) : null;
     if (button === "Forward") {
       if (position === sets.length - 1) {
         // if at the end of the sets, increase the set and restart or go to the log workout page
@@ -67,7 +70,6 @@ const TimerScreen = ({
   }
 
   useEffect(() => {
-    let lastSecond: boolean = true;
     if (started) {
       if (seconds == 0) {
         if (minutes == 0) {
@@ -79,7 +81,10 @@ const TimerScreen = ({
         }
       }
       if (seconds > 0) {
-        setTimeout(() => setSeconds((seconds) => seconds - 1), 1000);
+        timerRef.current = setTimeout(
+          () => setSeconds((seconds) => seconds - 1),
+          1000
+        );
       }
     }
   }, [started, seconds, minutes]);
@@ -90,75 +95,41 @@ const TimerScreen = ({
   }, [position]);
 
   return (
-    <SafeAreaView>
-      <View style={tw`h-1/2 flex items-center justify-center`}>
-        <View style={tw`flex flex-col items-center`}>
-          <Text style={tw`text-3xl font-bold p-4`}>{sets[position].title}</Text>
-          <Text style={tw`text-2xl font-bold p-4`}>
-            {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+    <HideKeyboard>
+      <SafeAreaView>
+        <View style={tw`h-1/2 flex items-center justify-center`}>
+          <View style={tw`flex flex-col items-center`}>
+            <Text style={tw`text-3xl font-bold p-4`}>
+              {sets[position].title}
+            </Text>
+            {sets[position].reps > 1 ? (
+              <Text style={tw`text-2xl font-bold p-4`}>
+                {sets[position].reps} reps
+              </Text>
+            ) : (
+              <Text style={tw`text-2xl font-bold p-4`}>
+                {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+              </Text>
+            )}
+          </View>
+          <Text style={tw`text-xl font-bold p-1`}>
+            Set {set} of {numSets}
           </Text>
         </View>
-        <Text style={tw`text-xl font-bold p-1`}>
-          Set {set} of {numSets}
-        </Text>
-      </View>
-      <View style={tw`p-2 h-1/2 flex flex-row justify-between items-center`}>
-        <TouchableOpacity onPress={() => handleButtonPress("Back")}>
-          <Text style={tw`text-2xl`}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setStarted((started) => !started)}>
-          <Text style={tw`text-2xl`}>{started ? "Stop" : "Start"}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleButtonPress("Forward")}>
-          <Text style={tw`text-2xl`}>Next</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+        <View style={tw`p-2 h-1/2 flex flex-row justify-between items-center`}>
+          <TouchableOpacity onPress={() => handleButtonPress("Back")}>
+            <Text style={tw`text-2xl`}>Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setStarted((started) => !started)}>
+            <Text style={tw`text-2xl`}>{started ? "Stop" : "Start"}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleButtonPress("Forward")}>
+            <Text style={tw`text-2xl`}>Next</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </HideKeyboard>
   );
 };
-
-// takes an item from the sets array and shows its data. contains timer component aswell
-
-// interface CurrentItemProps {
-//   item: Set;
-//   started?: boolean;
-// }
-
-// const CurrentTimerItem: FC<CurrentItemProps> = ({ item, started }) => {
-//   const [minutes, setMinutes] = useState(item.minutes);
-//   const [seconds, setSeconds] = useState(item.seconds);
-
-//   function timerReset() {}
-
-//   useEffect(() => {
-//     if (started) {
-//       if (seconds == 0) {
-//         if (minutes == 0) {
-//           timerReset();
-//         }
-//         if (minutes > 0) {
-//           setSeconds(59);
-//           setMinutes((minutes) => minutes - 1);
-//         }
-//       }
-//       if (seconds > 0) {
-//         setTimeout(() => setSeconds(seconds - 1), 1000);
-//       }
-//     }
-//   }, [started, seconds, minutes]);
-//   useEffect(() => {
-//     setMinutes(item.minutes);
-//     setSeconds(item.seconds);
-//   }, [item]);
-
-//   return (
-//     <View>
-//       <Text>{item.title}</Text>
-//       <Text>
-//         {minutes}:{seconds > 10 ? seconds : "0" + seconds}
-//       </Text>
-//     </View>
-//   );
-// };
 
 export default TimerScreen;
