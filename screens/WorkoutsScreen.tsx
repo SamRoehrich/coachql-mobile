@@ -1,10 +1,9 @@
 import React from "react";
-import { Button, SafeAreaView, Text, TouchableOpacity } from "react-native";
+import { Button, SafeAreaView, StyleSheet } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { Spinner } from "../components/Spinner";
 import { useGetWorkoutsQuery, Workout } from "../generated/graphql";
 import { HomeStackNavProps } from "../types";
-import tw from "twrnc";
 
 interface WorkoutListItemProps {
   workout: Workout;
@@ -41,7 +40,7 @@ const WorkoutsScreen = ({
     console.log(workouts);
 
     return (
-      <SafeAreaView style={tw`h-full`}>
+      <SafeAreaView style={styles.container}>
         <FlatList
           data={workouts}
           renderItem={({ item }) => {
@@ -56,3 +55,9 @@ const WorkoutsScreen = ({
 };
 
 export default WorkoutsScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    height: "100%",
+  },
+});

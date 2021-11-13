@@ -1,7 +1,6 @@
-import React, { FC, useEffect, useRef, useState } from "react";
-import { Button, SafeAreaView } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { SafeAreaView, StyleSheet } from "react-native";
 import { Text, View } from "../components/Themed";
-import tw from "twrnc";
 import { HomeStackNavProps } from "../types";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import HideKeyboard from "../components/HideKeyboard";
@@ -97,34 +96,30 @@ const TimerScreen = ({
   return (
     <HideKeyboard>
       <SafeAreaView>
-        <View style={tw`h-1/2 flex items-center justify-center`}>
-          <View style={tw`flex flex-col items-center`}>
-            <Text style={tw`text-3xl font-bold p-4`}>
-              {sets[position].title}
-            </Text>
+        <View style={styles.container}>
+          <View style={styles.timer}>
+            <Text style={styles.text}>{sets[position].title}</Text>
             {sets[position].reps > 1 ? (
-              <Text style={tw`text-2xl font-bold p-4`}>
-                {sets[position].reps} reps
-              </Text>
+              <Text style={styles.text}>{sets[position].reps} reps</Text>
             ) : (
-              <Text style={tw`text-2xl font-bold p-4`}>
+              <Text style={styles.text}>
                 {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
               </Text>
             )}
           </View>
-          <Text style={tw`text-xl font-bold p-1`}>
+          <Text style={styles.text}>
             Set {set} of {numSets}
           </Text>
         </View>
-        <View style={tw`p-2 h-1/2 flex flex-row justify-between items-center`}>
+        <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={() => handleButtonPress("Back")}>
-            <Text style={tw`text-2xl`}>Back</Text>
+            <Text style={styles.text}>Back</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setStarted((started) => !started)}>
-            <Text style={tw`text-2xl`}>{started ? "Stop" : "Start"}</Text>
+            <Text style={styles.text}>{started ? "Stop" : "Start"}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleButtonPress("Forward")}>
-            <Text style={tw`text-2xl`}>Next</Text>
+            <Text style={styles.text}>Next</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -133,3 +128,30 @@ const TimerScreen = ({
 };
 
 export default TimerScreen;
+
+const styles = StyleSheet.create({
+  text: {
+    lineHeight: 32,
+    fontSize: 24,
+    padding: 32,
+  },
+  timer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  container: {
+    height: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonContainer: {
+    padding: 32,
+    height: "50%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+});

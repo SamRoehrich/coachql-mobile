@@ -1,11 +1,10 @@
 import React from "react";
-import { Button } from "react-native";
+import { Button, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner } from "../components/Spinner";
 import { Text, View } from "../components/Themed";
 import { useGetWorkoutQuery } from "../generated/graphql";
 import { HomeStackNavProps } from "../types";
-import tw from "twrnc";
 const WorkoutPreviewScreen = ({
   navigation,
   route,
@@ -20,13 +19,11 @@ const WorkoutPreviewScreen = ({
   }
   return (
     <SafeAreaView>
-      <Text style={tw`text-xl font-light text-gray-700 px-2`}>Description</Text>
+      <Text style={styles.text}>Description</Text>
       {data && data.getWorkout ? (
         <>
-          <Text style={tw`text-lg px-2 text-gray-900`}>
-            {data.getWorkout.description}
-          </Text>
-          <View style={tw`flex flex-row justify-between p-2`}>
+          <Text style={styles.text}>{data.getWorkout.description}</Text>
+          <View style={styles.buttonContainer}>
             <Button
               title="Start Workout"
               onPress={() => {
@@ -62,3 +59,17 @@ const WorkoutPreviewScreen = ({
 };
 
 export default WorkoutPreviewScreen;
+
+const styles = StyleSheet.create({
+  text: {
+    lineHeight: 32,
+    fontSize: 24,
+    paddingHorizontal: 8,
+  },
+  buttonContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 8,
+  },
+});

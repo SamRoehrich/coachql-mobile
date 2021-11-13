@@ -2,14 +2,13 @@ import React from "react";
 import {
   Button,
   SafeAreaView,
+  StyleSheet,
   TextInput,
   TouchableOpacity,
-  Keyboard,
 } from "react-native";
 import { Text, View } from "../components/Themed";
 import { useLogWorkoutMutation } from "../generated/graphql";
 import { HomeStackNavProps } from "../types";
-import tw from "twrnc";
 
 const LogWorkoutScreen = ({
   route,
@@ -21,61 +20,55 @@ const LogWorkoutScreen = ({
   const [notes, setNotes] = React.useState<string>("");
   return (
     <SafeAreaView>
-      <Text style={tw`font-bold text-2xl p-2 text-gray-800`}>
-        Log Workout - {route.params.name}
-      </Text>
-      <View style={tw`flex flex-col justify-between p-2 bg-gray-100`}>
-        <Text style={tw`text-xl text-gray-800 font-bold w-full`}>
-          Percent Completed
-        </Text>
-        <View style={tw`flex flex-row w-full justify-between items-center`}>
+      <Text style={styles.headerText}>Log Workout - {route.params.name}</Text>
+      <View style={styles.buttonContainer}>
+        <Text style={styles.headerText}>Percent Completed</Text>
+        <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={tw`flex items-center justify-center w-10 ${
-              percentCompleted === 25 ? "border border-blue-500 rounded" : ""
-            }`}
+            style={
+              percentCompleted === 25 ? styles.buttonSelected : styles.button
+            }
             onPress={() => setPercentCompleted(25)}
           >
-            <Text style={tw`text-xl`}>25</Text>
+            <Text style={styles.buttonText}>25</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setPercentCompleted(50)}
-            style={tw`flex items-center justify-center  w-10 ${
-              percentCompleted === 50 ? "border border-blue-500 rounded" : ""
-            }`}
+            style={
+              percentCompleted === 50 ? styles.buttonSelected : styles.button
+            }
           >
-            <Text style={tw`text-xl`}>50</Text>
+            <Text style={styles.buttonText}>50</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={tw`flex items-center justify-center  w-10 ${
-              percentCompleted === 75 ? "border border-blue-500 rounded" : ""
-            }`}
+            style={
+              percentCompleted === 75 ? styles.buttonSelected : styles.button
+            }
             onPress={() => setPercentCompleted(75)}
           >
-            <Text style={tw`text-xl`}>75</Text>
+            <Text style={styles.buttonText}>75</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={tw`flex items-center justify-center  w-10 ${
-              percentCompleted === 100 ? "border border-blue-500 rounded" : ""
-            }`}
+            style={
+              percentCompleted === 100 ? styles.buttonSelected : styles.button
+            }
             onPress={() => setPercentCompleted(100)}
           >
-            <Text style={tw`text-xl`}>100</Text>
+            <Text style={styles.buttonText}>100</Text>
           </TouchableOpacity>
         </View>
       </View>
-      <View style={tw`flex flex-row justify-between p-2 bg-gray-100`}>
-        <Text style={tw`text-xl text-gray-800 font-bold`}>RPE</Text>
+      <View style={styles.buttonContainer}>
+        <Text style={styles.headerText}>RPE</Text>
         <TextInput
           onChangeText={(value) => setRpe(value)}
           value={rpe}
           keyboardType="number-pad"
-          style={tw`border border-gray-500 p-2 w-12 text-right rounded-lg`}
         />
       </View>
-      <View style={tw`flex justify-between p-2 bg-gray-100`}>
-        <Text style={tw`text-xl text-gray-800 font-bold`}>Notes</Text>
+      <View style={styles.buttonContainer}>
+        <Text style={styles.headerText}>Notes</Text>
         <TextInput
-          style={tw`border h-24 border-gray-500 p-2 rounded-lg`}
           onChangeText={(value) => setNotes(value)}
           value={notes}
           multiline={true}
@@ -104,3 +97,44 @@ const LogWorkoutScreen = ({
 };
 
 export default LogWorkoutScreen;
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    padding: 8,
+  },
+  headerText: {
+    fontWeight: "500",
+    lineHeight: 32,
+    fontSize: 24,
+    padding: 32,
+  },
+  percentContainer: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  buttonText: {
+    lineHeight: 32,
+    fontSize: 24,
+  },
+  button: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 40,
+  },
+  buttonSelected: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 40,
+    borderColor: "blue",
+    borderWidth: 2,
+    borderRadius: 2,
+  },
+});

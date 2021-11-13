@@ -1,10 +1,18 @@
 import React from "react";
-import { ActivityIndicator, SafeAreaView } from "react-native";
-import tw from "twrnc";
+import { ActivityIndicator, SafeAreaView, StyleSheet } from "react-native";
 export function Spinner() {
   return (
-    <SafeAreaView style={tw`flex justify-center items-center h-full`}>
+    <SafeAreaView style={styles.container}>
       <ActivityIndicator size="large" />
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+  },
+});

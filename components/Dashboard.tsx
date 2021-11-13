@@ -3,34 +3,34 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HomeStackNavProps } from "../types";
 import { Text, View } from "./Themed";
-import tw from "twrnc";
+import { StyleSheet } from "react-native";
 
 const Dashboard = ({ navigation }: HomeStackNavProps<"Dashboard">) => {
   return (
-    <SafeAreaView style={tw`bg-white h-full flex justify-between p-4`}>
+    <SafeAreaView style={styles.container}>
       <TouchableOpacity
-        style={tw`w-full`}
+        style={styles.button}
         onPress={() => {
           navigation.navigate("WorkoutTypeSelection");
         }}
       >
-        <View style={tw`flex justify-center`}>
-          <Text style={tw`px-4 text-2xl text-gray-700`}>Workouts</Text>
+        <View>
+          <Text style={styles.text}>Workouts</Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={tw`w-full`}>
-        <View style={tw`flex justify-center`}>
-          <Text style={tw`px-4 text-2xl text-gray-700`}>Notes</Text>
+      <TouchableOpacity style={styles.button}>
+        <View>
+          <Text style={styles.text}>Notes</Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={tw`w-full`}>
-        <View style={tw`flex justify-center`}>
-          <Text style={tw`px-4 text-2xl text-gray-700`}>Training History</Text>
+      <TouchableOpacity style={styles.button}>
+        <View>
+          <Text style={styles.text}>Training History</Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={tw`w-full`}>
-        <View style={tw`flex justify-center`}>
-          <Text style={tw`px-4 text-2xl text-gray-700`}>Calendar</Text>
+      <TouchableOpacity style={styles.button}>
+        <View>
+          <Text style={styles.text}>Calendar</Text>
         </View>
       </TouchableOpacity>
     </SafeAreaView>
@@ -38,3 +38,25 @@ const Dashboard = ({ navigation }: HomeStackNavProps<"Dashboard">) => {
 };
 
 export default Dashboard;
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "white",
+    height: "100%",
+    display: "flex",
+    justifyContent: "space-around",
+    padding: 16,
+    paddingTop: 10,
+  },
+  button: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  text: {
+    paddingHorizontal: 16,
+    fontSize: 24,
+    lineHeight: 32,
+  },
+});
