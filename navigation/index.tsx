@@ -12,7 +12,7 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
-import { ActivityIndicator, ColorSchemeName } from "react-native";
+import { ActivityIndicator, ColorSchemeName, StyleSheet } from "react-native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -24,7 +24,6 @@ import { RootTabParamList } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import AuthenticationScreen from "../screens/AuthenticationScreen";
 import { useMeLazyQuery, useMeQuery } from "../generated/graphql";
-import tw from "twrnc";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { token } from "../graphql/cache";
 import { useReactiveVar } from "@apollo/client";
@@ -49,7 +48,7 @@ export default function Navigation({
 
   if (appLoading || loading) {
     return (
-      <SafeAreaView style={tw`flex h-full items-center justify-center`}>
+      <SafeAreaView style={styles.container}>
         <ActivityIndicator size="large" />
       </SafeAreaView>
     );
@@ -146,3 +145,12 @@ function TabBarIcon(props: {
 }) {
   return <FontAwesome size={30} style={{ marginBottom: -3 }} {...props} />;
 }
+
+const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
