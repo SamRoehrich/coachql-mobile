@@ -3,6 +3,7 @@ import * as React from "react";
 import { Button, StyleSheet, TextInput } from "react-native";
 import { useLoginMutation, useMeLazyQuery } from "../generated/graphql";
 import { token } from "../graphql/cache";
+import HideKeyboard from "../components/HideKeyboard";
 
 export default function AuthenticationScreen() {
   const [email, setEmail] = React.useState("");
@@ -31,25 +32,27 @@ export default function AuthenticationScreen() {
     );
   }
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Email Address</Text>
-      <TextInput
-        onChangeText={(email) => setEmail(email)}
-        value={email}
-        defaultValue={email}
-        style={styles.input}
-        keyboardType="email-address"
-      />
-      <Text style={styles.label}>Password</Text>
-      <TextInput
-        onChangeText={(text) => setPassword(text)}
-        value={password}
-        defaultValue={password}
-        style={styles.input}
-        secureTextEntry={true}
-      />
-      <Button title="Sign In" onPress={handleLoginClick} />
-    </View>
+    <HideKeyboard>
+      <View style={styles.container}>
+        <Text style={styles.label}>Email Address</Text>
+        <TextInput
+          onChangeText={(email) => setEmail(email)}
+          value={email}
+          defaultValue={email}
+          style={styles.input}
+          keyboardType="email-address"
+        />
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          onChangeText={(text) => setPassword(text)}
+          value={password}
+          defaultValue={password}
+          style={styles.input}
+          secureTextEntry={true}
+        />
+        <Button title="Sign In" onPress={handleLoginClick} />
+      </View>
+    </HideKeyboard>
   );
 }
 
